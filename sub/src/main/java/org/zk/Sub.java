@@ -33,20 +33,21 @@ public class Sub implements MessageListener{
         }
     }
 
-    public static void receive(String topic) throws Exception {
-        ConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
+    public static void receive() throws Exception {
+        String url = "failover://tcp://192.168.226.129:61616";
+        ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
         Connection connection = connectionFactory.createConnection();
         connection.start();
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Destination destination = session.createTopic(topic);
+//        Destination destination = session.createTopic("topicB");
+        Destination destination =session.createQueue("q2");
         MessageConsumer consumer = session.createConsumer(destination);
         consumer.setMessageListener(new Sub());
-        LOGGER.info("订阅topic:{}", topic);
     }
 
     public static void main(String[] args) throws Exception {
         //Sub.receive("topicA");
-        Sub.receive("topicB");
+        Sub.receive();
     }
 
 }
