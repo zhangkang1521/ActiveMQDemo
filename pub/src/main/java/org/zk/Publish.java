@@ -23,7 +23,7 @@ public class Publish {
     public void send(String msg) {
         Connection connection = null;
         try {
-            String url = "failover://tcp://192.168.226.129:61616";
+            String url = "tcp://localhost:61616";
             ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
             connection = connectionFactory.createConnection();
             connection.start();

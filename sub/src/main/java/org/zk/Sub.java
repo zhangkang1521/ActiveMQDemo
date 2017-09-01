@@ -34,7 +34,7 @@ public class Sub implements MessageListener{
     }
 
     public static void receive() throws Exception {
-        String url = "failover://tcp://192.168.226.129:61616";
+        String url = "tcp://localhost:61616";
         ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
         Connection connection = connectionFactory.createConnection();
         connection.start();
@@ -46,7 +46,6 @@ public class Sub implements MessageListener{
     }
 
     public static void main(String[] args) throws Exception {
-        //Sub.receive("topicA");
         Sub.receive();
     }
 
