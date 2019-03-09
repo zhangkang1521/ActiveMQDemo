@@ -18,38 +18,18 @@ import org.slf4j.LoggerFactory;
  */
 public class Publish {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Publish.class);
 
-    public void send(String topic, String msg) {
-        Connection connection = null;
-        try {
-            String url = "failover://tcp://localhost:61616";
-            ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
-            connection = connectionFactory.createConnection();
-            connection.start();
-            // 4.创建Session，(是否支持事务)
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Destination destination_send = session.createTopic(topic);
-            MessageProducer producer = session.createProducer(destination_send);
-            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT); //是否持久化
-            TextMessage message = session.createTextMessage(msg);
-            producer.send(message);
-            LOGGER.info("发送消息, topic:{}, content:{}", topic, msg);
-        } catch (JMSException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if(connection != null) {
-                    connection.close();
-                }
-            }catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static void main(String[] args) {
-        //new Publish().send("topicA", "aaaaa");
-        new Publish().send("topicB", "bbbbb");
+    public static void main(String[] args) throws Exception{
+        String url = "failover://tcp://localhost:61616";
+        ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
+        Connection connection = connectionFactory.createConnection();
+        Session session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
+        Destination destination = session.createQueue("my-queue");
+        MessageProducer producer = session.createProducer(destination);
+        TextMessage textMessage1 = session.createTextMessage("hello");
+        producer.send(textMessage1);
+        session.commit();
+        session.close();
+        connection.close();
     }
 }

@@ -17,36 +17,20 @@ import org.slf4j.LoggerFactory;
  * 订阅者
  * Created by zhangkang on 2016/12/29.
  */
-public class Sub implements MessageListener{
+public class Sub {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Sub.class);
-
-    @Override
-    public void onMessage(Message message) {
-        if (message instanceof TextMessage) {
-            TextMessage txtMsg = (TextMessage) message;
-            try {
-                LOGGER.info("哈，我接收到了消息：{}", txtMsg.getText());
-            } catch (JMSException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static void receive(String topic) throws Exception {
+    public static void main(String[] args) throws Exception {
         ConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
         Connection connection = connectionFactory.createConnection();
         connection.start();
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Destination destination = session.createTopic(topic);
+        Session session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
+        Destination destination = session.createQueue("my-queue");
         MessageConsumer consumer = session.createConsumer(destination);
-        consumer.setMessageListener(new Sub());
-        LOGGER.info("订阅topic:{}", topic);
-    }
-
-    public static void main(String[] args) throws Exception {
-        //Sub.receive("topicA");
-        Sub.receive("topicB");
+        TextMessage message1 = (TextMessage)consumer.receive();
+        System.out.println(message1.getText());
+        session.commit();
+        session.close();
+        connection.close();
     }
 
 }
