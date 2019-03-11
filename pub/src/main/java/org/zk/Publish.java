@@ -23,12 +23,14 @@ public class Publish {
         String url = "failover://tcp://localhost:61616";
         ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
         Connection connection = connectionFactory.createConnection();
-        Session session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
-        Destination destination = session.createQueue("my-queue");
+        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Destination destination = session.createQueue("HelloWorldQueue");
         MessageProducer producer = session.createProducer(destination);
-        TextMessage textMessage1 = session.createTextMessage("hello");
-        producer.send(textMessage1);
-        session.commit();
+        for (int i = 0; i < 5; i++) {
+            TextMessage textMessage1 = session.createTextMessage("hello");
+            producer.send(textMessage1);
+        }
+
         session.close();
         connection.close();
     }
